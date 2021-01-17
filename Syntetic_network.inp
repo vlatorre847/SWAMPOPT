@@ -1,0 +1,198 @@
+[TITLE]
+;;Project Title/Notes
+
+[OPTIONS]
+;;Option             Value
+FLOW_UNITS           LPS
+INFILTRATION         HORTON
+FLOW_ROUTING         DYNWAVE
+LINK_OFFSETS         ELEVATION
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
+START_DATE           07/08/2020
+START_TIME           06:00:00
+REPORT_START_DATE    07/08/2020
+REPORT_START_TIME    06:00:00
+END_DATE             07/08/2020
+END_TIME             18:00:00
+SWEEP_START          01/01
+SWEEP_END            12/31
+DRY_DAYS             0
+REPORT_STEP          00:15:00
+WET_STEP             00:05:00
+DRY_STEP             01:00:00
+ROUTING_STEP         0:00:30 
+RULE_STEP            00:00:00
+
+INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  BOTH
+FORCE_MAIN_EQUATION  H-W
+VARIABLE_STEP        0.75
+LENGTHENING_STEP     0
+MIN_SURFAREA         1.167
+MAX_TRIALS           20
+HEAD_TOLERANCE       0.0015
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
+
+[EVAPORATION]
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.0
+DRY_ONLY         NO
+
+[JUNCTIONS]
+;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+n1               10         0          0          0          0         
+n2               8.7        0          0          0          0         
+n3               8.4        0          0          0          0         
+n4               7.44       0          0          0          0         
+n5               7.44       0          0          0          0         
+n7               7.44       0          0          0          0         
+n6               6.54       0          0          0          0         
+n8               6.54       0          0          0          0         
+
+[OUTFALLS]
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+5                4.3        FREE                        NO                       
+6                4.3        FREE                        NO                       
+
+[STORAGE]
+;;Name           Elev.    MaxDepth   InitDepth  Shape      Curve Name/Params            N/A      Fevap    Psi      Ksat     IMD     
+;;-------------- -------- ---------- ----------- ---------- ---------------------------- -------- --------          -------- --------
+3                3.3      1          0          TABULAR    Risorsa                      1        0       
+4                3.3      1          0          TABULAR    out3                         10       0       
+1                10       1          1          TABULAR    Risorsa                      0        0       
+
+[CONDUITS]
+;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
+;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
+c1               n1               n2               2600       0.02       *          *          0          0         
+c2               n3               n4               1400       0.02       *          *          0          0         
+c3               n5               n6               900        0.02       *          *          0          0         
+c4               n7               n8               900        0.02       *          *          0          0         
+10               3                5                10         0.01       1          *          0          0         
+11               4                6                400        0.01       *          6          0          0         
+
+[PUMPS]
+;;Name           From Node        To Node          Pump Curve       Status   Sartup Shutoff 
+;;-------------- ---------------- ---------------- ---------------- ------ -------- --------
+g1               1                n1               10l/s            ON       0        0       
+
+[ORIFICES]
+;;Name           From Node        To Node          Type         Offset     Qcoeff     Gated    CloseTime 
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- ----------
+g3               n4               n5               SIDE         *          0.65       NO       0         
+g4               n4               n7               SIDE         *          0.65       NO       0         
+g2               n2               n3               SIDE         *          0.65       NO       0         
+
+[WEIRS]
+;;Name           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff   Surcharge  RoadWidth  RoadSurf   Coeff. Curve
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ---------- ---------- ---------- ---------- ----------------
+out4             n8               4                TRANSVERSE   *          1.84       YES      0        0          YES       
+out3             n6               3                TRANSVERSE   *          1.84       YES      0        0          YES       
+
+[XSECTIONS]
+;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
+;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
+c1               TRAPEZOIDAL  1                0.5        1          1          1                    
+c2               TRAPEZOIDAL  0.9              0.4        1          1          1                    
+c3               TRAPEZOIDAL  0.8              0.3        1          1          1                    
+c4               TRAPEZOIDAL  0.8              0.3        1          1          1                    
+10               CIRCULAR     1                0          0          0          1                    
+11               CIRCULAR     1                0          0          0          1                    
+g3               RECT_CLOSED  1                1          0          0
+g4               RECT_CLOSED  1                1          0          0
+g2               RECT_CLOSED  1                1          0          0
+out4             RECT_OPEN    0.8              1          0          0         
+out3             RECT_OPEN    0.8              1          0          0         
+
+[LOSSES]
+;;Link           Kentry     Kexit      Kavg       Flap Gate  Seepage   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+c1               0          0          0          NO         12.5      
+c2               0          0          0          NO         12.5      
+c3               0          0          0          NO         12.5      
+c4               0          0          0          NO         12.5      
+
+[CONTROLS]
+RULE 1
+IF SIMULATION TIME > 0
+THEN weirs out3 SETTING = 0.139
+
+RULE 2
+IF SIMULATION TIME > 0
+THEN weirs out4 SETTING = 0.16
+
+RULE 3
+IF SIMULATION TIME > 0
+THEN Pump g1 SETTING = 0
+
+RULE 4
+IF SIMULATION TIME > 0
+THEN ORIFICE g2 SETTING = 0
+
+RULE 5
+IF SIMULATION TIME > 0
+THEN ORIFICE g3 SETTING = 0
+
+RULE 6
+IF SIMULATION TIME > 0
+THEN ORIFICE g4 SETTING = 0
+
+
+
+[CURVES]
+;;Name           Type       X-Value    Y-Value   
+;;-------------- ---------- ---------- ----------
+10l/s            Pump4      0          228        
+10l/s                       2          228        
+;
+Risorsa          Storage    0          100000000 
+Risorsa                     1          100000000 
+;
+out3             Storage    0          9139      
+out3                        1          9139      
+;
+1000m^3          Storage    0          1000      
+1000m^3                     1          1000      
+
+[REPORT]
+;;Reporting Options
+SUBCATCHMENTS ALL
+NODES ALL
+LINKS ALL
+
+[TAGS]
+
+[MAP]
+DIMENSIONS 0.000 0.000 10000.000 10000.000
+Units      None
+
+[COORDINATES]
+;;Node           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+n1               820.943            6960.155          
+n2               2879.370           6959.340          
+n3               2960.000           6960.000          
+n4               3950.722           6961.884          
+n5               4067.756           6961.935          
+n7               3950.058           6862.093          
+n6               4452.437           6961.935          
+n8               3950.162           6506.893          
+5                4600.188           6960.155          
+6                3950.162           6426.666          
+3                4543.396           6960.155          
+4                3949.256           6454.963          
+1                725.429            6960.155          
+
+[VERTICES]
+;;Link           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+
