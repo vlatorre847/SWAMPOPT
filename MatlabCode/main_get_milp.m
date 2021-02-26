@@ -179,25 +179,25 @@ Dv=(1-eps).*q.*d;
 
  A=sparse(A_indx+1,A_j,A_val);
  [~,NN]=size(A);
-intcon=zeros(l*M*N+2*K*N,1);
-k=1;
-for i=1:NN
-    if strcmp(ctype(i),'B')
-        intcon(k)=i;
-        k=k+1;
-    end
-end
-intcon(intcon==0)=[];
-%%%%%%intlinprog%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%options=optimoptions(@intlinprog);
-%options.MaxTime=1000;
-%[x,fval,exitflag,output] = intlinprog(f,intcon,A(1:A_r,:),b(1:A_r),A(A_r+1:end,:),b(A_r+1:end),lb,ub,x0,options);
 
+%%%%%%intlinprog%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%intcon=zeros(l*M*N+2*K*N,1);
+%k=1;
+%for i=1:NN
+%    if strcmp(ctype(i),'B')
+%        intcon(k)=i;
+%        k=k+1;
+%    end
+%end
+%intcon(intcon==0)=[];
+%options=optimoptions(@intlinprog);
+%options.MaxTime=3600;
+%[x,fval,exitflag,output] = intlinprog(f,intcon,A(1:A_r,:),b(1:A_r),A(A_r+1:end,:),b(A_r+1:end),lb,ub,x0,options);
 %%%%%%intlinprog%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%CPLEX%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    options = cplexoptimset('cplex');
-   options.timelimit=3*1;
+   options.timelimit=3600;
    options.display='on';
    [x,fval,flag,output] = cplexmilp(f,A(1:A_r,:),b(1:A_r),A(A_r+1:end,:),b(A_r+1:end),[],[],[],lb,ub,ctype,x0,options);
 %%%%%%CPLEX%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
